@@ -3,7 +3,6 @@ package com.danieldev.api.resources;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +23,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.danieldev.api.models.Product;
 import com.danieldev.api.services.ProductService;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+
+@Api(value = "API Rest - Model Product")
 @RestController
 @RequestMapping("/products")
 public class ProductResource {
@@ -37,7 +40,8 @@ public class ProductResource {
 		this.productService = productService;
 	}
 
-	@GetMapping
+	@ApiOperation(value = "Encontrar todos os Produtos no banco de dados")
+	@GetMapping(produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<?> findAll(){
 		List<Product> list = this.productService.findAll();
@@ -45,13 +49,15 @@ public class ProductResource {
 		return new ResponseEntity<List>(list, (HttpStatus.OK));
 	}
 	
-	@GetMapping(value = "/{id}")
+	@ApiOperation(value = "Recupera do banco de dados, um produto por seu id")
+	@GetMapping(value = "/{id}", produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<?> find(@PathVariable Long id) {
 		Product product = this.productService.find(id);
 		return new ResponseEntity<Product>(product, HttpStatus.OK);
 	}
 	
+	@ApiOperation(value = "Cria um novo produto")
 	@PostMapping
 	@ResponseBody
 	@ResponseStatus(HttpStatus.CREATED)
@@ -70,6 +76,7 @@ public class ProductResource {
 						.collect(Collectors.joining(",")));
 	}
 	
+	@ApiOperation(value = "Atualiza um produto existente")
 	@PutMapping(value = "/{id}")
 	@ResponseBody
 	public ResponseEntity<?> update(@Valid @PathVariable(value = "id") Long id, @RequestBody Product product, Errors errors) {
@@ -85,6 +92,7 @@ public class ProductResource {
 						.collect(Collectors.joining(","))); 
 	}
 	
+	@ApiOperation(value = "Deleta um produto do banco de dados")
 	@DeleteMapping(value = "/{id}")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void delete(@PathVariable(value = "id") Long id) {
