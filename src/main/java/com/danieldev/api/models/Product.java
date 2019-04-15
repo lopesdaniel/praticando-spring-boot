@@ -6,6 +6,12 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.PrePersist;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
 
 @Entity
 public class Product {
@@ -16,16 +22,30 @@ public class Product {
 		this.name = name;
 		this.qtd = qtd;
 	}
+	
+	
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
+	@NotEmpty(message = "Não pode estar em Branco")
+	@NotBlank(message = "Não pode estar vazio")
+	@Size(min = 4, max = 255)
 	private String name;
 	
+	@Min(value = 0)
+	@Max(value = 1000)
 	private Integer qtd;
 	
 	private Date dateCreated;
+	
+	@PrePersist
+	public void onPrePersist() {
+		if(this.dateCreated == null) {
+			this.dateCreated = new Date();
+		}
+	}
 
 	public Long getId() {
 		return id;
